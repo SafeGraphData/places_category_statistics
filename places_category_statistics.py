@@ -48,13 +48,13 @@ styled_dfs = [
 tabs = st.tabs(["Global"] + countries)
 with tabs[0]:
     # st.write("Global POI Count")
-    st.dataframe(global_df_styled, use_container_width=True)
+    st.dataframe(global_df_styled, use_container_width=True, hide_index=True)
 
 for i, tab in enumerate(tabs[1:]):
     with tab:
         if i < len(styled_dfs):
             # st.write(f"{countries[i]} POI Count")
-            st.dataframe(styled_dfs[i], use_container_width=True)
+            st.dataframe(styled_dfs[i], use_container_width=True, hide_index=True)
 
 hide_streamlit_style = """
             <style>
