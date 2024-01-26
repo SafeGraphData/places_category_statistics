@@ -40,11 +40,6 @@ for country in countries:
     df['Total POI'] = df['Total POI'].astype(int).apply(lambda x: "{:,}".format(x))
     dfs.append(df)
 
-styled_dfs = [
-    df.style.apply(lambda x: ['background-color: #D7E8ED' if i % 2 == 0 else '' for i in range(len(x))], axis=0)
-    for df in dfs
-]
-
 tabs = st.tabs(["Global"] + countries)
 with tabs[0]:
     # st.write("Global POI Count")
@@ -52,9 +47,22 @@ with tabs[0]:
 
 for i, tab in enumerate(tabs[1:]):
     with tab:
-        if i < len(styled_dfs):
-            # st.write(f"{countries[i]} POI Count")
-            st.dataframe(styled_dfs[i], use_container_width=True, hide_index=True)
+        if i < len(dfs):
+            naics_list = st.selectbox("NAICS Code:", [""] + dfs[i]['NAICS Code'].astype(str).unique().tolist())
+            if naics_list:
+                styled_dfs = (
+                    dfs[i][dfs[i]['NAICS Code'].astype(str).str.startswith(naics_list)]\
+                        .style.apply(lambda x: ['background-color: #D7E8ED' if i % 2 == 0 else '' for i in range(len(x))], axis=0)
+                    )
+                # st.write(f"{countries[i]} POI Count")
+                st.dataframe(styled_dfs, use_container_width=True, hide_index=True)
+            else:
+                styled_dfs = (
+                    dfs[i].style.apply(lambda x: ['background-color: #D7E8ED' if i % 2 == 0 else '' for i in range(len(x))], axis=0)
+                    )
+                # st.write(f"{countries[i]} POI Count")
+                st.dataframe(styled_dfs, use_container_width=True, hide_index=True)
+#
 
 hide_streamlit_style = """
             <style>
