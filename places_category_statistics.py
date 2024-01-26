@@ -40,6 +40,17 @@ for country in countries:
     df['Total POI'] = df['Total POI'].astype(int).apply(lambda x: "{:,}".format(x))
     dfs.append(df)
 
+naics_possible_df = dfs[0]
+naics_possible_df['SafeGraph Subcategory'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Subcategory']]
+naics_possible_df['SafeGraph Category'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Category']]
+
+
+naics_possible_df['Category'] = naics_possible_df['NAICS Code'].astype(str) + " " + naics_possible_df['SafeGraph Category']\
+      + " " + naics_possible_df['SafeGraph Subcategory'] 
+
+
+possible_naics_codes = naics_possible_df['Category'].astype(str).unique()
+
 tabs = st.tabs(["Global"] + countries)
 with tabs[0]:
     # st.write("Global POI Count")
@@ -48,10 +59,10 @@ with tabs[0]:
 for i, tab in enumerate(tabs[1:]):
     with tab:
         if i < len(dfs):
-            naics_list = st.selectbox("NAICS Code:", [""] + dfs[i]['NAICS Code'].astype(str).unique().tolist())
+            naics_list = st.selectbox("NAICS Code:", [""] + possible_naics_codes.tolist(), key = i)
             if naics_list:
                 styled_dfs = (
-                    dfs[i][dfs[i]['NAICS Code'].astype(str).str.startswith(naics_list)]\
+                    dfs[i][dfs[i]['NAICS Code'].astype(str).str.startswith(naics_list.split(" ")[0])]\
                         .style.apply(lambda x: ['background-color: #D7E8ED' if i % 2 == 0 else '' for i in range(len(x))], axis=0)
                     )
                 # st.write(f"{countries[i]} POI Count")
