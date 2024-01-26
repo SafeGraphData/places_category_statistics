@@ -16,6 +16,9 @@ category_stats_df = read_from_gsheets("Category stats")\
     [["Country", "naics_2", "naics_code", "safegraph_category", "safegraph_subcategory", "industry_title", "total_poi_count"]]\
     .astype({'total_poi_count': int})
 
+category_stats_df['safegraph_subcategory'] = category_stats_df['safegraph_subcategory'].astype(str).replace("nan", " ")
+category_stats_df['safegraph_category'] = category_stats_df['safegraph_category'].astype(str).replace("nan", " ")
+
 global_df = category_stats_df.groupby(['naics_2', 'industry_title'])\
     .agg(total_poi_count=('total_poi_count', 'sum'))\
     .sort_values('total_poi_count', ascending=False)\
@@ -41,8 +44,8 @@ for country in countries:
     dfs.append(df)
 
 naics_possible_df = dfs[0]
-naics_possible_df['SafeGraph Subcategory'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Subcategory']]
-naics_possible_df['SafeGraph Category'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Category']]
+#naics_possible_df['SafeGraph Subcategory'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Subcategory']]
+#naics_possible_df['SafeGraph Category'] = ["" if pd.isna(x) else x for x in naics_possible_df['SafeGraph Category']]
 
 
 naics_possible_df['Category'] = naics_possible_df['NAICS Code'].astype(str) + " " + naics_possible_df['SafeGraph Category']\
